@@ -1,17 +1,22 @@
-#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
- 
-#define BUFSIZE 256
-    
-// This program prints the size of a specified file in bytes
-int main(int argc, char** argv) {
-    // Ensure that the user supplied exactly one command line argument
+#include <sys/stat.h>
+
+int main(int argc, char **argv) {
+    // Проверяем, что введён ровно один аргумент
     if (argc != 2) { 
-        fprintf(stderr, "Please provide the address of a file as an input.\n");
-        return -1;
+        fprintf(stderr, "Укажите адрес файла.\n");
+        return 1;
     }
-    char cmd[BUFSIZE] = "wc -c < ";
-    strcat(cmd, argv[1]);
-    system(cmd);
+    
+    // Получаем информацию о файле
+    struct stat fileInfo;
+    if (stat(argv[1], &fileInfo) != 0) {
+        fprintf(stderr, "Ошибка: файл '%s' не существует или недоступен.\n", argv[1]);
+        return 1;
+    }
+    
+    // Выводим размер файла в байтах
+    printf("%ld\n", fileInfo.st_size);
+    return 0;
 }
